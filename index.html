@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Labirynt</title>
+		<link rel="stylesheet" href="style_LAB.css">
+		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+	</head>
+	<body>	
+		<script src="jquery-1.10.2.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+
+		<div id="myModal" class="modal hide fade" data-backdrop="static" data-keyboard="false">
+			<div class="modal-header">
+				<h3 id="myModalLabel" class="c">Labirynt</h3>
+			</div>
+			<div class="modal-body">
+				<p>Witaj! Twoim zadaniem jest przejść przez labirynt, ale uważaj wielu padło z wyczerpania nie mogłąc znaleść z wyjścia!</p>
+				<p>
+					Wybierz wielkość labiryntu:
+					<label class="radio inline">
+						<input type="radio" name="optionsRadios" id="chSmall" value="small" checked>mały
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="optionsRadios" id="chMedium" value="medium">średni
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="optionsRadios" id="chLarge" value="large">duży
+					</label>
+				</p>
+				<p><button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalButtons" onclick="movementMenu()">Zmień ustawienia</button></p>
+				<p><small><em>Obsługiwane przeglądarki: chrome, oprea i firefox(jeżeli masz wystarczającą ilość cierpliwości z uwagi na niepoprawne obsługiwanie transformacji 3d). Dodatkowo przeglądarki miewaja problemy w przetwarzaniu transformacji i wyświetlają się wtedy białe pola zamiast niektórych ścian. Można to naprawić zmniejszając współczynnik wielkości ekranu w zmianie ustawień.</em></small></p>
+			</div>
+			<div class="modal-footer">
+				<p class="text-center"><button class="btn btn-inverse" onclick="start()">Rozpocznij grę</button></p>
+			</div>
+		</div>
+
+		<div id="myModalButtons" class="modal hide fade" data-backdrop="static">
+			<div class="modal-body">
+				<p>W grze poruszasz się w cztery strony opisane niżej, aby się obrócić naciśnij dowolny przycisk na myszce i rozglądaj się.</p>
+				<p>
+					<table class="table table-striped">
+						<tr>
+							<td><b>Kierunek</b></td>
+							<td><b>Klawisz</b></td>
+							<td><b>Zmień</b></td>
+						</tr>
+						<tr>
+							<td>Przód</td>
+							<td id="sFront"></p></td>
+							<td ><a type="button" id="fButton" class="btn" data-loading-text="Wciśnij klawisz" onclick="changeButtons('front')" data-toggle="popover" data-placement="top" data-trigger="hover" data-delay="800" data-content="Dozwolone klawisze: literowe, cyfrowe oraz strzałki. Nie mogą sie powtarzać!">Zmień klawisz</a></td>
+						</tr>
+						<tr>
+							<td>Lewo</td>
+							<td id="sLeft"></td>
+							<td><a type="button" id="lButton" class="btn" data-loading-text="Wciśnij klawisz" onclick="changeButtons('left')" data-toggle="popover" data-placement="top" data-trigger="hover" data-delay="800" data-content="Dozwolone klawisze: literowe, cyfrowe oraz strzałki. Nie mogą sie powtarzać!">Zmień klawisz</a></td>
+						</tr>
+						<tr>
+							<td>Prawo</td>
+							<td id="sRight"></td>
+							<td><a type="button" id="rButton" class="btn" data-loading-text="Wciśnij klawisz" onclick="changeButtons('right')" data-toggle="popover" data-placement="top" data-trigger="hover" data-delay="800" data-content="Dozwolone klawisze: literowe, cyfrowe oraz strzałki. Nie mogą sie powtarzać!">Zmień klawisz</a></td>
+						</tr>
+						<tr>
+							<td>Tył</td>
+							<td id="sBack"></td>
+							<td><a type="button" id="bButton" class="btn" data-loading-text="Wciśnij klawisz" onclick="changeButtons('back')" data-toggle="popover" data-placement="top" data-trigger="hover" data-delay="800" data-content="Dozwolone klawisze: literowe, cyfrowe oraz strzałki. Nie mogą sie powtarzać!">Zmień klawisz</a></td>
+						</tr>		
+    				</table>
+				</p>
+				<p>
+					<b>Kursor w trakcie gry</b>:&nbsp;
+					<label class="checkbox inline">
+						<input type="checkbox" onclick="menuPointerOpt()" id="boxPointerOpt"><span id="pointerOpt"></span>
+					</label><br>
+					(pamiętaj, że nawet jak go wyłączysz istnieje i jak będzie znajdował się na krawędzi ekranu uniemożliwi Ci obracanie w tym kierynku)
+				</p>
+				<p>
+					<b>Ustawienie szybkości obracania</b>:
+					<p class="text-center"><canvas id="rotSlider" height="30px" width="500px"></p>
+				</p>
+				<p>
+					<b>Mroczny labirynt</b>:&nbsp;
+					<label class="checkbox inline">
+						<input type="checkbox" onclick="menuDarkLabOpt()" id="boxDarkLabOpt">
+					</label>
+				</p>
+				<p>
+					<div class="inline">
+						<b>Współczynnik wielkości ekranu</b>:&nbsp;
+					   	<div class="input-append">
+					    	<button class="btn" type="button" id="sAMod" onclick="substractAMod()"><b>-</b></button>
+    						<input class="span2 uneditable-input" id="chAModButton" type="text" disabled>
+    						<button class="btn" type="button" id="aAMod" onclick="addAMod()"><b>+</b></button>
+   						</div>
+   					</div>
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Zamknij</button>
+				<button class="btn btn-primary" onclick="saveChButtons()">Zapisz zmiany</button>
+			</div>
+		</div>
+
+		<div class="coverStart"></div>
+		<section id="screen">
+			<span id="newPointer"></span>
+			<div id="fp"><div id="drawSpace"></div></div>
+			<div id="coverTop"></div>
+			<div id="coverRight"></div>
+			<div id="coverLeft"><canvas id="mapCanv" width="420px" height="540px"></canvas></div>
+			<div id="coverBottom"></div>	
+		</section>
+		<div id="pointerDrawSpace"></div>
+		
+		<script src="menu.js"></script>
+		<script src="js_LAB.js"></script>
+		<script src="los_LAB.js"></script>
+	</body>
+</html>
